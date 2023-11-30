@@ -50,11 +50,6 @@ class ItemList(MethodView):
     @blp.arguments(TodoSchema)
     @blp.response(201, TodoSchema)
     def post(self, data: TodoSchema):
-        if "name" not in data or \
-            "description" not in data or \
-            "completed" not in data:
-            abort(400, message='Please input full info')
-
         item = TodoModel(**data)
 
         try:
