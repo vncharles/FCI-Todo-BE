@@ -17,6 +17,7 @@ class Item(MethodView):
         item = TodoModel.query.get_or_404(todo_id)
         return item
 
+    # @blp.response(200)
     def delete(self, todo_id):
         item = TodoModel.query.get_or_404(todo_id)
         db.session.delete(item)

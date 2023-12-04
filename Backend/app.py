@@ -15,7 +15,7 @@ def create_app(db_url=None):
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3"
     app.config["OPENAPI_URL_PREFIX"] = "/"
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://root:password@localhost:3306/todo-app'
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://root:sapassword@localhost:3306/todo-app'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     db.init_app(app)
