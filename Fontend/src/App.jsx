@@ -4,8 +4,7 @@ import {
 	IconButton,
 	Stack,
 	Toolbar,
-	Typography,
-  Box
+	Typography
 } from '@mui/material';
 import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
 import {QueryClient, QueryClientProvider} from 'react-query';

@@ -1,17 +1,12 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import {
-	AppBar,
 	Button,
-	IconButton,
 	Stack,
-	Toolbar,
 	Typography,
 	Box,
 	Modal,
@@ -19,11 +14,9 @@ import {
 	FormLabel,
 	Checkbox,
 	FormControlLabel,
-	Radio,
 } from '@mui/material';
 import axios from 'axios';
-import { useQuery } from 'react-query';
-import { Link, useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 export const fetchData = async () => {
@@ -32,20 +25,17 @@ export const fetchData = async () => {
 
 		if (response.status === 200) {
 			const result = await response.data;
-			console.log(result);
 			return result;
 		} else {
 			const result = await response.data;
-
-			console.log(result.message);
+			alert('Error: ' + result.message);
 		}
 	} catch (e) {
-		console.log(e);
+		alert('Error');
 	}
 };
 
 const TodoList = () => {
-	// const {data, error, isLoading} = useQuery('todos', fetchData);
 	const [openModal, setOpenModal] = useState(false);
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
@@ -56,10 +46,6 @@ const TodoList = () => {
 	const handleClose = () => setOpenModal(false);
 
 	const handleSubmit = async () => {
-		console.log({ name });
-		console.log({ description });
-		console.log({ completed });
-
 		try {
 			const response = await axios.post('http://127.0.0.1:5000/todo', {
 				name,
@@ -111,7 +97,6 @@ const TodoList = () => {
 	const navigate = useNavigate();
 
 	const handleDelete = async (id) => {
-		console.log({ id });
 		try {
 			const response = await axios.delete(
 				`http://127.0.0.1:5000/todo/${id}`
@@ -125,11 +110,10 @@ const TodoList = () => {
 				alert('Error ' + errorMessage.message);
 			}
 		} catch (err) {
-			console.log(err);
+			alert('Error server');
 		}
 	};
 
-	console.log({ data });
 	return (
 		<>
 			<Button
@@ -208,7 +192,7 @@ const TodoList = () => {
 									checked={completed}
 									onChange={(event) => {
 										setCompleted(event.target.checked);
-										// console.log(event.target.checked);
+										console.log(event.target.checked);
 									}}
 									value={completed}
 								/>
