@@ -7,7 +7,7 @@ import {
 
 import App from './App.jsx'
 import './index.css'
-import TodoList, {fetchData as todoLoader} from './views/TodoList.jsx';
+import TodoList from './views/TodoList.jsx';
 
 const router = createBrowserRouter([
   {
@@ -16,8 +16,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <TodoList />,
-        loader: todoLoader
+        element: <TodoList />
       },
     ]
   },

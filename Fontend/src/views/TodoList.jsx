@@ -16,32 +16,36 @@ import {
 	FormControlLabel,
 } from '@mui/material';
 import axios from 'axios';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-
-export const fetchData = async () => {
-	try {
-		const response = await axios.get('http://127.0.0.1:5000/todo');
-
-		if (response.status === 200) {
-			const result = await response.data;
-			return result;
-		} else {
-			const result = await response.data;
-			alert('Error: ' + result.message);
-		}
-	} catch (e) {
-		alert('Error');
-	}
-};
+import { useQuery } from 'react-query';
 
 const TodoList = () => {
-	const [openModal, setOpenModal] = useState(false);
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 	const [completed, setCompleted] = useState(false);
 	const [currentTaskId, setCurrentTaskId] = useState(null);
 
+	const navigate = useNavigate();
+
+	const fetchData = async () => {
+		try {
+			const response = await axios.get('http://127.0.0.1:5000/todo');
+
+			if (response.status === 200) {
+				const result = await response.data;
+				return result;
+			} else {
+				const result = await response.data;
+				alert('Error: ' + result.message);
+			}
+		} catch (e) {
+			alert('Error');
+		}
+	};
+	const { data, isLoading } = useQuery('todos', fetchData);
+
+	const [openModal, setOpenModal] = useState(false);
 	const handleOpen = () => setOpenModal(true);
 	const handleClose = () => setOpenModal(false);
 
@@ -92,9 +96,6 @@ const TodoList = () => {
 			alert('Error: ' + err.message);
 		}
 	};
-
-	const data = useLoaderData();
-	const navigate = useNavigate();
 
 	const handleDelete = async (id) => {
 		try {
@@ -246,38 +247,53 @@ const TodoList = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{data.map((row) => (
-							<TableRow key={row.name}>
-								<TableCell align="center">{row.id}</TableCell>
-								<TableCell align="left">{row.name}</TableCell>
-								<TableCell align="left">
-									{row.description}
-								</TableCell>
-								<TableCell align="left">
-									{row.completed ? 'Done' : 'Process'}
-								</TableCell>
-								<TableCell align="center">
-									<Button
-										color="warning"
-										onClick={() => {
-											setCurrentTaskId(row.id);
-											setName(row.name);
-											setDescription(row.description);
-											setCompleted(row.completed);
-											setOpenModal(true);
-										}}
-									>
-										Edit
-									</Button>
-									<Button
-										color="error"
-										onClick={() => handleDelete(row.id)}
-									>
-										Delete
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
+						{isLoading ? (
+							<Typography
+								variant="body1"
+								style={{ color: '#000' }}
+							>
+								Loading...
+							</Typography>
+						) : data ? (
+							data.map((row) => (
+								<TableRow key={row.name}>
+									<TableCell align="center">
+										{row.id}
+									</TableCell>
+									<TableCell align="left">
+										{row.name}
+									</TableCell>
+									<TableCell align="left">
+										{row.description}
+									</TableCell>
+									<TableCell align="left">
+										{row.completed ? 'Done' : 'Process'}
+									</TableCell>
+									<TableCell align="center">
+										<Button
+											color="warning"
+											onClick={() => {
+												setCurrentTaskId(row.id);
+												setName(row.name);
+												setDescription(row.description);
+												setCompleted(row.completed);
+												setOpenModal(true);
+											}}
+										>
+											Edit
+										</Button>
+										<Button
+											color="error"
+											onClick={() => handleDelete(row.id)}
+										>
+											Delete
+										</Button>
+									</TableCell>
+								</TableRow>
+							))
+						) : (
+							<></>
+						)}
 					</TableBody>
 				</Table>
 			</TableContainer>

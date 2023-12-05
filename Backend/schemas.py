@@ -12,4 +12,3 @@ class TodoUpdateSchema(Schema):
     name = fields.Str()
     description = fields.Str()
     completed = fields.Boolean()
-

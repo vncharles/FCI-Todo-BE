@@ -1,7 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
-import uuid
 
 from db import db
 from models.todo import TodoModel
@@ -29,12 +28,12 @@ class Item(MethodView):
     def put(self, data, todo_id):
         item = TodoModel.query.get_or_404(todo_id)
 
-        if 'name' in data:
-            item.name = data['name']
-        if 'description' in data:
-            item.description = data['description']
-        if 'completed' in data:
-            item.completed = data['completed']
+        if "name" in data:
+            item.name = data["name"]
+        if "description" in data:
+            item.description = data["description"]
+        if "completed" in data:
+            item.completed = data["completed"]
 
         db.session.add(item)
         db.session.commit()
