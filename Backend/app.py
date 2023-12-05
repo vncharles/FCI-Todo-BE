@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_smorest import Api
 from flask_cors import CORS
+
 from db import db
-from controller.todo import blp as TodoBlueprint
+from controller.task import blp as TodoBlueprint
+from controller.auth import blp as AuthBlueprint
 
 
 def create_app(db_url=None):
@@ -25,5 +27,6 @@ def create_app(db_url=None):
         db.create_all()
 
     api.register_blueprint(TodoBlueprint)
+    api.register_blueprint(AuthBlueprint)
 
     return app
