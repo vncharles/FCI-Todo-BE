@@ -15,10 +15,10 @@ import {
 	Checkbox,
 	FormControlLabel,
 } from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+
+import { createTask, deleteTask, fetchTodos, updateTask } from '../api';
 
 const TodoList = () => {
 	const [name, setName] = useState('');
@@ -26,48 +26,63 @@ const TodoList = () => {
 	const [completed, setCompleted] = useState(false);
 	const [currentTaskId, setCurrentTaskId] = useState(null);
 
-	const navigate = useNavigate();
-
-	const fetchData = async () => {
-		try {
-			const response = await axios.get('http://127.0.0.1:5000/todo');
-
-			if (response.status === 200) {
-				const result = await response.data;
-				return result;
-			} else {
-				const result = await response.data;
-				alert('Error: ' + result.message);
-			}
-		} catch (e) {
-			alert('Error');
-		}
-	};
-	const { data, isLoading } = useQuery('todos', fetchData);
+	const { data, isLoading } = useQuery('todos', fetchTodos);
 
 	const [openModal, setOpenModal] = useState(false);
 	const handleOpen = () => setOpenModal(true);
 	const handleClose = () => setOpenModal(false);
 
-	const handleSubmit = async () => {
-		try {
-			const response = await axios.post('http://127.0.0.1:5000/todo', {
-				name,
-				description,
-				completed,
-			});
+	const mutationCreateTask = useMutation((data) => createTask(data), {
+		onSuccess: () => {
+			setName('');
+			setDescription('');
+			setCompleted(false);
+			handleClose();
+			alert('Create success');
+		},
+		onError: () => {
+			alert('Create error');
+		},
+		onSettled: () => {
+			console.log('Settled');
+		},
+	});
 
-			if (response.status === 201) {
-				alert('Create successfully!');
+	const mutationUpdateTask = useMutation(
+		(dataUpdate) => updateTask(currentTaskId, dataUpdate),
+		{
+			onSuccess: () => {
+				setCurrentTaskId(null);
 				setName('');
 				setDescription('');
 				setCompleted(false);
 				handleClose();
-				navigate('.');
-			}
-		} catch (err) {
-			alert('Error: ' + err.message);
+				alert('Update successfully!');
+			},
+			onError: () => {
+				alert('Update error');
+			},
+			onSettled: () => {
+				console.log('Settled');
+			},
 		}
+	);
+
+	const mutationDeleteTask = useMutation((taskId) => deleteTask(taskId), {
+		onSuccess: () => {
+			alert('Delete successfully!');
+		},
+		onError: () => {
+			alert('Delete error');
+		},
+		onSettled: () => {
+			console.log('Settled');
+		},
+	});
+
+	const handleSubmit = async () => {
+		const newTask = { name, description, completed };
+		mutationCreateTask.mutate(newTask);
 	};
 
 	const handleUpdateTask = async () => {
@@ -77,42 +92,11 @@ const TodoList = () => {
 			completed,
 		};
 
-		try {
-			const response = await axios.put(
-				`http://127.0.0.1:5000/todo/${currentTaskId}`,
-				updataTask
-			);
-
-			if (response.status === 200) {
-				alert('Update successfully!');
-				setCurrentTaskId(null);
-				setName('');
-				setDescription('');
-				setCompleted(false);
-				handleClose();
-				navigate('.');
-			}
-		} catch (err) {
-			alert('Error: ' + err.message);
-		}
+		mutationUpdateTask.mutate(updataTask);
 	};
 
-	const handleDelete = async (id) => {
-		try {
-			const response = await axios.delete(
-				`http://127.0.0.1:5000/todo/${id}`
-			);
-
-			if (response.status === 200) {
-				alert('Delete successfully');
-				navigate('.');
-			} else {
-				const errorMessage = response.data;
-				alert('Error ' + errorMessage.message);
-			}
-		} catch (err) {
-			alert('Error server');
-		}
+	const handleDelete = async (taskId) => {
+		mutationDeleteTask.mutate(taskId);
 	};
 
 	return (

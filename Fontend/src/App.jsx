@@ -4,10 +4,10 @@ import {
 	IconButton,
 	Stack,
 	Toolbar,
-	Typography
+	Typography,
 } from '@mui/material';
 import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
-import {QueryClient, QueryClientProvider} from 'react-query';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import './App.css';
 import { Outlet } from 'react-router-dom';
@@ -16,7 +16,6 @@ const queryClient = new QueryClient();
 
 function App() {
 	return (
-    
 		<QueryClientProvider client={queryClient}>
 			<Stack>
 				<AppBar>
@@ -45,9 +44,9 @@ function App() {
 					</Toolbar>
 				</AppBar>
 			</Stack>
-      <Stack>
-        <Outlet />
-      </Stack>
+			<Stack>
+				<Outlet />
+			</Stack>
 		</QueryClientProvider>
 	);
 }
