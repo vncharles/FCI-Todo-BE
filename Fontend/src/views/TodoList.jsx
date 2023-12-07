@@ -4,69 +4,22 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import {
-	Button,
-	Stack,
-	Typography,
-	Box,
-	Modal,
-	TextField,
-	FormLabel,
-	Checkbox,
-	FormControlLabel,
-} from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
-import { createTask, deleteTask, fetchTodos, updateTask } from '../api';
+import { deleteTask, fetchTodos } from '../api';
+import ModalSaveTask from '../component/ModalSaveTask';
 
 const TodoList = () => {
-	const [name, setName] = useState('');
-	const [description, setDescription] = useState('');
-	const [completed, setCompleted] = useState(false);
-	const [currentTaskId, setCurrentTaskId] = useState(null);
-
 	const { data, isLoading } = useQuery('todos', fetchTodos);
-
+	let [currentTaskUpdate, setCurrentTaskUpdate] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
 	const handleOpen = () => setOpenModal(true);
-	const handleClose = () => setOpenModal(false);
-
-	const mutationCreateTask = useMutation((data) => createTask(data), {
-		onSuccess: () => {
-			setName('');
-			setDescription('');
-			setCompleted(false);
-			handleClose();
-			alert('Create success');
-		},
-		onError: () => {
-			alert('Create error');
-		},
-		onSettled: () => {
-			console.log('Settled');
-		},
-	});
-
-	const mutationUpdateTask = useMutation(
-		(dataUpdate) => updateTask(currentTaskId, dataUpdate),
-		{
-			onSuccess: () => {
-				setCurrentTaskId(null);
-				setName('');
-				setDescription('');
-				setCompleted(false);
-				handleClose();
-				alert('Update successfully!');
-			},
-			onError: () => {
-				alert('Update error');
-			},
-			onSettled: () => {
-				console.log('Settled');
-			},
-		}
-	);
+	const handleClose = () => {
+		setOpenModal(false);
+		setCurrentTaskUpdate(null);
+	};
 
 	const mutationDeleteTask = useMutation((taskId) => deleteTask(taskId), {
 		onSuccess: () => {
@@ -80,27 +33,17 @@ const TodoList = () => {
 		},
 	});
 
-	const handleSubmit = async () => {
-		const newTask = { name, description, completed };
-		mutationCreateTask.mutate(newTask);
-	};
-
-	const handleUpdateTask = async () => {
-		const updataTask = {
-			name,
-			description,
-			completed,
-		};
-
-		mutationUpdateTask.mutate(updataTask);
-	};
-
 	const handleDelete = async (taskId) => {
 		mutationDeleteTask.mutate(taskId);
 	};
 
 	return (
 		<>
+			<ModalSaveTask
+				task={currentTaskUpdate}
+				handleClose={handleClose}
+				openModal={openModal}
+			/>
 			<Button
 				style={{
 					backgroundColor: 'lightgray',
@@ -112,93 +55,7 @@ const TodoList = () => {
 			>
 				Add
 			</Button>
-			<Modal
-				open={openModal}
-				onClose={handleClose}
-				aria-labelledby="modal-modal-title"
-				aria-describedby="modal-modal-description"
-				style={{ marginLeft: 160 }}
-			>
-				<Box margin={20} backgroundColor="#fff" width={800} padding={5}>
-					<Typography
-						variant="h6"
-						style={{ color: '#000', marginTop: 65 }}
-					>
-						Add task
-					</Typography>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="name-label">Name</FormLabel>
-						<TextField
-							label="name"
-							placeholder="input name task"
-							aria-labelledby="name-label"
-							fullWidth
-							onChange={(event) => {
-								setName(event.target.value);
-							}}
-							value={name}
-						/>
-					</Stack>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="description-label">
-							Description
-						</FormLabel>
-						<TextField
-							label="description"
-							placeholder="input description task"
-							aria-aria-labelledby="description-label"
-							fullWidth
-							onChange={(event) => {
-								setDescription(event.target.value);
-							}}
-							value={description}
-						/>
-					</Stack>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="completed-label">Completed</FormLabel>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={completed}
-									onChange={(event) => {
-										setCompleted(event.target.checked);
-										console.log(event.target.checked);
-									}}
-									value={completed}
-								/>
-							}
-							label="Done"
-							aria-labelledby="completed-label"
-						/>
-					</Stack>
-					<Stack spacing={2} marginTop={5}>
-						<Button
-							style={{ backgroundColor: 'lightblue' }}
-							onClick={() => {
-								if (!currentTaskId) handleSubmit();
-								else handleUpdateTask();
-							}}
-						>
-							Save
-						</Button>
-					</Stack>
-				</Box>
-			</Modal>
+
 			<TableContainer
 				style={{
 					width: '100%',
@@ -257,10 +114,12 @@ const TodoList = () => {
 										<Button
 											color="warning"
 											onClick={() => {
-												setCurrentTaskId(row.id);
-												setName(row.name);
-												setDescription(row.description);
-												setCompleted(row.completed);
+												setCurrentTaskUpdate({
+													id: row.id,
+													name: row.name,
+													description: row.description,
+													completed: row.completed
+												});
 												setOpenModal(true);
 											}}
 										>
