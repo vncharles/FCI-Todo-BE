@@ -23,3 +23,8 @@ class RegisterSchema(Schema):
 class LoginSchema(Schema):
     username = fields.Str(required=True)
     password = fields.Str(required=True)
+
+
+class UserResponse(Schema):
+    message = fields.Str()
+    data = fields.Dict()
