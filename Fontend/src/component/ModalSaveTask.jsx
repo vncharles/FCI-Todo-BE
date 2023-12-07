@@ -16,7 +16,7 @@ import { useMutation } from 'react-query';
 import { createTask, updateTask } from '../api';
 
 const ModalSaveTask = (props) => {
-  const { task, openModal, handleClose } = props;
+	const { task, openModal, handleClose } = props;
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 	const [completed, setCompleted] = useState(false);
@@ -82,18 +82,10 @@ const ModalSaveTask = (props) => {
 			style={{ marginLeft: 160 }}
 		>
 			<Box margin={20} backgroundColor="#fff" width={800} padding={5}>
-				<Typography
-					variant="h6"
-					style={{ color: '#000', marginTop: 65 }}
-				>
+				<Typography variant="h6" style={{ color: '#000', marginTop: 65 }}>
 					Add task
 				</Typography>
-				<Stack
-					spacing={2}
-					direction="row"
-					alignItems="center"
-					marginTop={5}
-				>
+				<Stack spacing={2} direction="row" alignItems="center" marginTop={5}>
 					<FormLabel id="name-label">Name</FormLabel>
 					<TextField
 						label="name"
@@ -106,12 +98,7 @@ const ModalSaveTask = (props) => {
 						value={name}
 					/>
 				</Stack>
-				<Stack
-					spacing={2}
-					direction="row"
-					alignItems="center"
-					marginTop={5}
-				>
+				<Stack spacing={2} direction="row" alignItems="center" marginTop={5}>
 					<FormLabel id="description-label">Description</FormLabel>
 					<TextField
 						label="description"
@@ -124,12 +111,7 @@ const ModalSaveTask = (props) => {
 						value={description}
 					/>
 				</Stack>
-				<Stack
-					spacing={2}
-					direction="row"
-					alignItems="center"
-					marginTop={5}
-				>
+				<Stack spacing={2} direction="row" alignItems="center" marginTop={5}>
 					<FormLabel id="completed-label">Completed</FormLabel>
 					<FormControlLabel
 						control={

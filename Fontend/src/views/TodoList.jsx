@@ -89,24 +89,15 @@ const TodoList = () => {
 					</TableHead>
 					<TableBody>
 						{isLoading ? (
-							<Typography
-								variant="body1"
-								style={{ color: '#000' }}
-							>
+							<Typography variant="body1" style={{ color: '#000' }}>
 								Loading...
 							</Typography>
 						) : data ? (
 							data.map((row) => (
 								<TableRow key={row.name}>
-									<TableCell align="center">
-										{row.id}
-									</TableCell>
-									<TableCell align="left">
-										{row.name}
-									</TableCell>
-									<TableCell align="left">
-										{row.description}
-									</TableCell>
+									<TableCell align="center">{row.id}</TableCell>
+									<TableCell align="left">{row.name}</TableCell>
+									<TableCell align="left">{row.description}</TableCell>
 									<TableCell align="left">
 										{row.completed ? 'Done' : 'Process'}
 									</TableCell>
@@ -118,17 +109,14 @@ const TodoList = () => {
 													id: row.id,
 													name: row.name,
 													description: row.description,
-													completed: row.completed
+													completed: row.completed,
 												});
 												setOpenModal(true);
 											}}
 										>
 											Edit
 										</Button>
-										<Button
-											color="error"
-											onClick={() => handleDelete(row.id)}
-										>
+										<Button color="error" onClick={() => handleDelete(row.id)}>
 											Delete
 										</Button>
 									</TableCell>
