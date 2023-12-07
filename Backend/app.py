@@ -1,8 +1,12 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+import json
+
 from db import db
-from controller.todo import blp as TodoBlueprint
+from controller.task import blp as TodoBlueprint
+from controller.auth import blp as AuthBlueprint
 
 
 def create_app(db_url=None):
@@ -25,5 +29,19 @@ def create_app(db_url=None):
         db.create_all()
 
     api.register_blueprint(TodoBlueprint)
+    api.register_blueprint(AuthBlueprint)
+
+    # Configure Swagger UI
+    SWAGGER_URL = "/swagger1"
+    API_URL = "/swagger1.json"
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL, API_URL, config={"app_name": "Sample API"}
+    )
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+    @app.route("/swagger1.json")
+    def swagger():
+        with open("swagger1.json", "r") as f:
+            return jsonify(json.load(f))
 
     return app

@@ -3,30 +3,30 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
-from models.todo import TodoModel
-from schemas import TodoSchema, TodoUpdateSchema
+from models.task import Task
+from schemas import TaskSchema, UpdateTaskSchema
 
-blp = Blueprint("Todos", __name__, description="Operations on items")
+blp = Blueprint("Task", __name__, description="Operations on items")
 
 
-@blp.route("/todo/<string:todo_id>")
+@blp.route("/todo/<string:task_id>")
 class Item(MethodView):
-    @blp.response(200, TodoSchema)
-    def get(self, todo_id):
-        item = TodoModel.query.get_or_404(todo_id)
+    @blp.response(200, TaskSchema)
+    def get(self, task_id):
+        item = Task.query.get_or_404(task_id)
         return item
 
     # @blp.response(200)
-    def delete(self, todo_id):
-        item = TodoModel.query.get_or_404(todo_id)
+    def delete(self, task_id):
+        item = Task.query.get_or_404(task_id)
         db.session.delete(item)
         db.session.commit()
         return {"message": "Todo deleted."}
 
-    @blp.arguments(TodoUpdateSchema)
-    @blp.response(200, TodoSchema)
-    def put(self, data, todo_id):
-        item = TodoModel.query.get_or_404(todo_id)
+    @blp.arguments(UpdateTaskSchema)
+    @blp.response(200, TaskSchema)
+    def put(self, data, task_id):
+        item = Task.query.get_or_404(task_id)
 
         if "name" in data:
             item.name = data["name"]
@@ -43,14 +43,14 @@ class Item(MethodView):
 
 @blp.route("/todo")
 class ItemList(MethodView):
-    @blp.response(200, TodoSchema(many=True))
+    @blp.response(200, TaskSchema(many=True))
     def get(self):
-        return TodoModel.query.all()
+        return Task.query.all()
 
-    @blp.arguments(TodoSchema)
-    @blp.response(201, TodoSchema)
-    def post(self, data: TodoSchema):
-        item = TodoModel(**data)
+    @blp.arguments(TaskSchema)
+    @blp.response(201, TaskSchema)
+    def post(self, data: TaskSchema):
+        item = Task(**data)
 
         try:
             db.session.add(item)
