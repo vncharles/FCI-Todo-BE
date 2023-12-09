@@ -4,119 +4,46 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import {
-	Button,
-	Stack,
-	Typography,
-	Box,
-	Modal,
-	TextField,
-	FormLabel,
-	Checkbox,
-	FormControlLabel,
-} from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Button, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+
+import { deleteTask, fetchTodos } from '../api';
+import ModalSaveTask from '../component/ModalSaveTask';
 
 const TodoList = () => {
-	const [name, setName] = useState('');
-	const [description, setDescription] = useState('');
-	const [completed, setCompleted] = useState(false);
-	const [currentTaskId, setCurrentTaskId] = useState(null);
-
-	const navigate = useNavigate();
-
-	const fetchData = async () => {
-		try {
-			const response = await axios.get('http://127.0.0.1:5000/todo');
-
-			if (response.status === 200) {
-				const result = await response.data;
-				return result;
-			} else {
-				const result = await response.data;
-				alert('Error: ' + result.message);
-			}
-		} catch (e) {
-			alert('Error');
-		}
-	};
-	const { data, isLoading } = useQuery('todos', fetchData);
-
+	const { data, isLoading } = useQuery('todos', fetchTodos);
+	let [currentTaskUpdate, setCurrentTaskUpdate] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
 	const handleOpen = () => setOpenModal(true);
-	const handleClose = () => setOpenModal(false);
-
-	const handleSubmit = async () => {
-		try {
-			const response = await axios.post('http://127.0.0.1:5000/todo', {
-				name,
-				description,
-				completed,
-			});
-
-			if (response.status === 201) {
-				alert('Create successfully!');
-				setName('');
-				setDescription('');
-				setCompleted(false);
-				handleClose();
-				navigate('.');
-			}
-		} catch (err) {
-			alert('Error: ' + err.message);
-		}
+	const handleClose = () => {
+		setOpenModal(false);
+		setCurrentTaskUpdate(null);
 	};
 
-	const handleUpdateTask = async () => {
-		const updataTask = {
-			name,
-			description,
-			completed,
-		};
+	const mutationDeleteTask = useMutation((taskId) => deleteTask(taskId), {
+		onSuccess: () => {
+			alert('Delete successfully!');
+		},
+		onError: () => {
+			alert('Delete error');
+		},
+		onSettled: () => {
+			console.log('Settled');
+		},
+	});
 
-		try {
-			const response = await axios.put(
-				`http://127.0.0.1:5000/todo/${currentTaskId}`,
-				updataTask
-			);
-
-			if (response.status === 200) {
-				alert('Update successfully!');
-				setCurrentTaskId(null);
-				setName('');
-				setDescription('');
-				setCompleted(false);
-				handleClose();
-				navigate('.');
-			}
-		} catch (err) {
-			alert('Error: ' + err.message);
-		}
-	};
-
-	const handleDelete = async (id) => {
-		try {
-			const response = await axios.delete(
-				`http://127.0.0.1:5000/todo/${id}`
-			);
-
-			if (response.status === 200) {
-				alert('Delete successfully');
-				navigate('.');
-			} else {
-				const errorMessage = response.data;
-				alert('Error ' + errorMessage.message);
-			}
-		} catch (err) {
-			alert('Error server');
-		}
+	const handleDelete = async (taskId) => {
+		mutationDeleteTask.mutate(taskId);
 	};
 
 	return (
 		<>
+			<ModalSaveTask
+				task={currentTaskUpdate}
+				handleClose={handleClose}
+				openModal={openModal}
+			/>
 			<Button
 				style={{
 					backgroundColor: 'lightgray',
@@ -128,93 +55,7 @@ const TodoList = () => {
 			>
 				Add
 			</Button>
-			<Modal
-				open={openModal}
-				onClose={handleClose}
-				aria-labelledby="modal-modal-title"
-				aria-describedby="modal-modal-description"
-				style={{ marginLeft: 160 }}
-			>
-				<Box margin={20} backgroundColor="#fff" width={800} padding={5}>
-					<Typography
-						variant="h6"
-						style={{ color: '#000', marginTop: 65 }}
-					>
-						Add task
-					</Typography>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="name-label">Name</FormLabel>
-						<TextField
-							label="name"
-							placeholder="input name task"
-							aria-labelledby="name-label"
-							fullWidth
-							onChange={(event) => {
-								setName(event.target.value);
-							}}
-							value={name}
-						/>
-					</Stack>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="description-label">
-							Description
-						</FormLabel>
-						<TextField
-							label="description"
-							placeholder="input description task"
-							aria-aria-labelledby="description-label"
-							fullWidth
-							onChange={(event) => {
-								setDescription(event.target.value);
-							}}
-							value={description}
-						/>
-					</Stack>
-					<Stack
-						spacing={2}
-						direction="row"
-						alignItems="center"
-						marginTop={5}
-					>
-						<FormLabel id="completed-label">Completed</FormLabel>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={completed}
-									onChange={(event) => {
-										setCompleted(event.target.checked);
-										console.log(event.target.checked);
-									}}
-									value={completed}
-								/>
-							}
-							label="Done"
-							aria-labelledby="completed-label"
-						/>
-					</Stack>
-					<Stack spacing={2} marginTop={5}>
-						<Button
-							style={{ backgroundColor: 'lightblue' }}
-							onClick={() => {
-								if (!currentTaskId) handleSubmit();
-								else handleUpdateTask();
-							}}
-						>
-							Save
-						</Button>
-					</Stack>
-				</Box>
-			</Modal>
+
 			<TableContainer
 				style={{
 					width: '100%',
@@ -248,24 +89,15 @@ const TodoList = () => {
 					</TableHead>
 					<TableBody>
 						{isLoading ? (
-							<Typography
-								variant="body1"
-								style={{ color: '#000' }}
-							>
+							<Typography variant="body1" style={{ color: '#000' }}>
 								Loading...
 							</Typography>
 						) : data ? (
 							data.map((row) => (
 								<TableRow key={row.name}>
-									<TableCell align="center">
-										{row.id}
-									</TableCell>
-									<TableCell align="left">
-										{row.name}
-									</TableCell>
-									<TableCell align="left">
-										{row.description}
-									</TableCell>
+									<TableCell align="center">{row.id}</TableCell>
+									<TableCell align="left">{row.name}</TableCell>
+									<TableCell align="left">{row.description}</TableCell>
 									<TableCell align="left">
 										{row.completed ? 'Done' : 'Process'}
 									</TableCell>
@@ -273,19 +105,18 @@ const TodoList = () => {
 										<Button
 											color="warning"
 											onClick={() => {
-												setCurrentTaskId(row.id);
-												setName(row.name);
-												setDescription(row.description);
-												setCompleted(row.completed);
+												setCurrentTaskUpdate({
+													id: row.id,
+													name: row.name,
+													description: row.description,
+													completed: row.completed,
+												});
 												setOpenModal(true);
 											}}
 										>
 											Edit
 										</Button>
-										<Button
-											color="error"
-											onClick={() => handleDelete(row.id)}
-										>
+										<Button color="error" onClick={() => handleDelete(row.id)}>
 											Delete
 										</Button>
 									</TableCell>

@@ -4,10 +4,10 @@ import {
 	IconButton,
 	Stack,
 	Toolbar,
-	Typography
+	Typography,
 } from '@mui/material';
 import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
-import {QueryClient, QueryClientProvider} from 'react-query';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import './App.css';
 import { Outlet } from 'react-router-dom';
@@ -16,7 +16,6 @@ const queryClient = new QueryClient();
 
 function App() {
 	return (
-    
 		<QueryClientProvider client={queryClient}>
 			<Stack>
 				<AppBar>
@@ -29,11 +28,7 @@ function App() {
 						>
 							<CatchingPokemonIcon />
 						</IconButton>
-						<Typography
-							variant="h6"
-							component="div"
-							sx={{ flexGrow: 1 }}
-						>
+						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							TODOAPP
 						</Typography>
 						<Stack direction="row" spacing={2}>
@@ -45,9 +40,9 @@ function App() {
 					</Toolbar>
 				</AppBar>
 			</Stack>
-      <Stack>
-        <Outlet />
-      </Stack>
+			<Stack>
+				<Outlet />
+			</Stack>
 		</QueryClientProvider>
 	);
 }
