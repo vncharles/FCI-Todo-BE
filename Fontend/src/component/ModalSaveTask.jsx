@@ -30,7 +30,7 @@ const ModalSaveTask = (props) => {
 	useEffect(() => {
 		setName(task?.name);
 		setDescription(task?.description);
-		setCompleted(task?.completed);
+		setCompleted(task?.completed | false);
 	}, [task]);
 
 	const mutationCreateTask = useMutation((data) => createTask(data), {
